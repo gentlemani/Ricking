@@ -66,10 +66,13 @@ class _HomeScreenState extends State<HomeScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _mainButton(() => null, 'New File'),
+                _mainButton(() => fileService.newFile(context), 'New File'),
                 Row(
                   children: [
-                    _actionButton(() => null, Icons.file_upload),
+                    _actionButton(
+                      () => fileService.loadFile(context),
+                      Icons.file_upload,
+                    ),
                     const SizedBox(width: 8),
                     _actionButton(() => null, Icons.folder),
                   ],

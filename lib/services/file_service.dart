@@ -11,23 +11,24 @@ class FileService {
 
   bool fieldsNotEmpty = false;
 
-  File? _selectedField;
+  File? _selectedFile;
   String _selectedDirectory = '';
-  
+
   void saveContent(context) async {
     final title = titleController.text;
     final description = descriptionController.text;
     final tags = tagsController.text;
 
-    final textContent = 'Title:\n\n$title\n\nDescription:\n\n$description\n\nTags:\n\n$tags';
+    final textContent =
+        "Title:\n\n$title\n\nDescription:\n\n$description\n\nTags:\n\n$tags";
 
-    try{
-      if(_selectedField != null){
-        await _selectedField!.writeAsString(textContent);
-      }else{
+    try {
+      if (_selectedFile != null) {
+        await _selectedFile!.writeAsString(textContent);
+      } else {
         final todayDate = getTodayDate();
         String metadataDirPath = _selectedDirectory;
-        if(metadataDirPath.isEmpty){
+        if (metadataDirPath.isEmpty) {
           final directory = await FilePicker.getDirectoryPath();
           _selectedDirectory = metadataDirPath = directory!;
         }
@@ -35,18 +36,59 @@ class FileService {
         final newFile = File(filepath);
         await newFile.writeAsString(textContent);
       }
-      SnackBarUtils.showSnackbar(context, Icons.check_circle, 'File Saved Succesfully');
-    }catch(e){
-      print(e);
+      SnackBarUtils.showSnackbar(
+        context,
+        Icons.check_circle,
+        'File Saved Succesfully',
+      );
+    } catch (e) {
       SnackBarUtils.showSnackbar(context, Icons.error, 'File not saved');
     }
-
   }
-  static String getTodayDate(){
+
+  void loadFile(context) async {
+    try {
+      FilePickerResult? result = await FilePicker.pickFiles();
+      if (result != null) {
+        File file = File(result.files.single.path!);
+        _selectedFile = file;
+
+        final fileContent = await file.readAsString();
+
+        final lines = fileContent.split('\n\n');
+        titleController.text = lines[1];
+        descriptionController.text = lines[3];
+        tagsController.text = lines[5];
+
+        SnackBarUtils.showSnackbar(context, Icons.upload_file, 'File uploaded');
+      } else {
+        SnackBarUtils.showSnackbar(
+          context,
+          Icons.error_rounded,
+          'No file selected',
+        );
+      }
+    } catch (e) {
+      SnackBarUtils.showSnackbar(
+        context,
+        Icons.error_rounded,
+        'No file selected',
+      );
+    }
+  }
+
+  void newFile(context) {
+    _selectedFile = null;
+    titleController.clear();
+    descriptionController.clear();
+    tagsController.clear();
+    SnackBarUtils.showSnackbar(context, Icons.file_upload, 'New File created');
+  }
+
+  static String getTodayDate() {
     final now = DateTime.now();
     final formatter = DateFormat('dd-MM-yyyy');
     final formatterDate = formatter.format(now);
     return formatterDate;
   }
-
 }
