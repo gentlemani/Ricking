@@ -17,6 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     addListeners();
   }
+
   @override
   void dispose() {
     removeListeners();
@@ -34,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void removeListeners(){
+  void removeListeners() {
     List<TextEditingController> controllers = [
       fileService.titleController,
       fileService.descriptionController,
@@ -97,7 +98,16 @@ class _HomeScreenState extends State<HomeScreen> {
               controller: fileService.tagsController,
             ),
             const SizedBox(height: 20),
-            Row(children: [_mainButton(() => null, 'Save File')]),
+            Row(
+              children: [
+                _mainButton(
+                  fileService.fieldsNotEmpty
+                      ? () => fileService.saveContent(context)
+                      : null,
+                  'Save File',
+                ),
+              ],
+            ),
           ],
         ),
       ),

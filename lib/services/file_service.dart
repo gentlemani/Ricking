@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ricking/utils/snackbar_utils.dart';
@@ -25,8 +26,18 @@ class FileService {
         await _selectedField!.writeAsString(textContent);
       }else{
         final todayDate = getTodayDate();
+        String metadataDirPath = _selectedDirectory;
+        if(metadataDirPath.isEmpty){
+          final directory = await FilePicker.getDirectoryPath();
+          _selectedDirectory = metadataDirPath = directory!;
+        }
+        final filepath = '$metadataDirPath/$todayDate - $title - metadata.txt';
+        final newFile = File(filepath);
+        await newFile.writeAsString(textContent);
       }
+      SnackBarUtils.showSnackbar(context, Icons.check_circle, 'File Saved Succesfully');
     }catch(e){
+      print(e);
       SnackBarUtils.showSnackbar(context, Icons.error, 'File not saved');
     }
 
